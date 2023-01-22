@@ -1,0 +1,69 @@
+# TP4-Filtrage-Analogique
+part1(Exo1)
+clear all 
+close all 
+clc
+
+te= 0.0005;
+t= 0:te:5-te;
+fe= 1/te;
+N=length(t);
+wc=2*pi*50;
+
+f1=500;
+f2=400;
+f3=50;
+
+
+%  tracage de signal
+x=sin(2*pi*f1*t)+ sin(2*pi*f2*t)+sin(2*pi*f3*t); 
+plot(t,x);
+% tracage de spectre
+y = fft(x);
+f = (-N/2:N/2-1)*(fe/N);
+% plot(f,fftshift(abs(y)))
+title("spectre Amplitude")
+% tracage de fct H
+w=2*pi*f;
+%  transmettance Complexe c'est le filtre utilise pour faire le filtrage de signal
+h=(1i*w/wc)./(1+1i*(w/wc));
+ plot(f,abs(h))
+ title(" tracage de fct H")
+% % le gain c'est le module de h et nous permet de determiner le frequence de courpure de signal
+% % tracage  le gain de fct H1 et H2 et H3 en changement le frequence de corpure  pour faire la comparaison 
+h1=((1i*w)/50)./(1+1i*(w/50));
+h2=((1i*w)/50)./(1+1i*(w/150));
+h3=((1i*w)/50)./(1+1i*(w/350));
+subplot(2,1,1)
+semilogx(f,20*log(abs(h1)),f,20*log(abs(h2)),f,20*log(abs(h3)))
+title(" tracage de trois gain(Bode Diagram)")
+grid on
+
+% tracage diphasage le gain de fct H1 et H2 et H3 
+%ce diphasage egale arg(h)
+%ce tracage nous permets de faire un observation de dephasage se produit par l'information et le bruit
+
+ h1=((1i*w)/50)./(1+1i*(w/50));
+h2=((1i*w)/50)./(1+1i*(w/150));
+h3=((1i*w)/50)./(1+1i*(w/350));
+subplot(2,1,2)
+
+ semilogx(f,angle(h1),f,angle(h2),f,angle(h3))
+ title(" tracage de trois phase(Bode Diagram)")
+ grid on
+ %%on fait le produit entre le signal et h selon la valeur de frequence de corpure
+yt1 = y.*h1 ;
+yt2 = y.*h2 ;
+yt3 = y.*h3 ;
+Y_filtree1 = ifft(y,'symmetric');
+Y_filtree2 = ifft(y,'symmetric');
+Y_filtree3 = ifft(y,'symmetric');
+plot(t, Y_filtree1)
+plot(t, Y_filtree2)
+plot(t, Y_filtree3)
+plot(t,y)
+%on fait un soustraction entre le signal et le signal filtree
+plot(t , y-Y_filtree1)
+plot(t , y-Y_filtree2)
+plot(t , y-Y_filtree3)
+
